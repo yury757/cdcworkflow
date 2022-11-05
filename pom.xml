@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ifind</groupId>
+    <artifactId>cdcworkflow</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.report.outputEncoding>UTF-8</project.report.outputEncoding>
+
+        <flinkcdc.pg.version>2.2.1</flinkcdc.pg.version>
+        <flink.version>1.13.6</flink.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ververica</groupId>
+            <artifactId>flink-connector-postgres-cdc</artifactId>
+            <version>${flinkcdc.pg.version}</version>
+        </dependency>
+
+        <!-- flink java依赖-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!-- flink java的另外一个依赖，依赖版本号还是和上面那个一致，而2.12是指scale版本，因为底层有一部分是用scala写的 -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_2.12</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!-- 1.10以上版本的flink必须要有这个依赖 -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_2.12</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
