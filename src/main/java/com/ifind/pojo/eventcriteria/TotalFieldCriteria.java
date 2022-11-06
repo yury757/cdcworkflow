@@ -2,18 +2,18 @@ package com.ifind.pojo.event;
 
 import java.util.Set;
 
-public class NormalFieldCriteria implements FieldCriteria {
-    /**
-     * 订阅的字段集合
-     */
-    private Set<String> subscribedFields;
-    public NormalFieldCriteria(Set<String> subscribedFields) {
+/**
+ * 订阅所有字段均发生变动的判断器
+ * @author yury
+ */
+public class TotalFieldCriteria extends FieldCriteria {
+    public TotalFieldCriteria(Set<String> subscribedFields) {
         assert subscribedFields != null;
         this.subscribedFields = subscribedFields;
     }
 
     /**
-     * 只要变动的字段可以覆盖订阅的字段，则成立
+     * 订阅的字段都发生变动，则成立
      * @param changedFields 变动的字段集合
      * @return
      */

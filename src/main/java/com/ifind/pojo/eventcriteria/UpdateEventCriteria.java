@@ -1,15 +1,17 @@
 package com.ifind.pojo.event;
 
-import java.util.Set;
-
-public class UpdateEventCriteria implements EventCriteria {
-    private Set<String> fields;
+/**
+ * 更新事件判断器
+ * @author yury
+ */
+public class UpdateEventCriteria extends DDLEventCriteria {
     private FieldCriteria fieldCriteria;
-    public UpdateEventCriteria(Set<String> fields, FieldCriteria fieldCriteria) {
-        this.fields = fields;
+    public UpdateEventCriteria(FieldCriteria fieldCriteria) {
+        super(Event.UPDATE_EVENT);
         this.fieldCriteria = fieldCriteria;
     }
 
+    @Override
     public boolean meetEvent(Event event) {
         if (!(event instanceof UpdateEvent)) {
             return false;
