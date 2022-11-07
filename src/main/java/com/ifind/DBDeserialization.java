@@ -1,9 +1,12 @@
 package com.ifind;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ifind.pojo.event.DeleteEvent;
+import com.ifind.pojo.event.Event;
+import com.ifind.pojo.event.InsertEvent;
+import com.ifind.pojo.event.UpdateEvent;
 import com.ifind.uitls.DateUtil;
 import com.ifind.uitls.JsonUtil;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
@@ -16,13 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class DBDeserialization implements DebeziumDeserializationSchema<ObjectNode> {
+/**
+ * 将数据库数据变动序列化成对应事件
+ * @author yury
+ */
+public class DBDeserialization implements DebeziumDeserializationSchema<Event> {
     private static final Logger LOG = LoggerFactory.getLogger(DBDeserialization.class);
-    public static final DBDeserialization instance = new DBDeserialization();
+    public static final DBDeserialization INSTANCE = new DBDeserialization();
 
     public final static String READ = "r";
     public final static String UPDATE = "u";
@@ -34,7 +39,7 @@ public class DBDeserialization implements DebeziumDeserializationSchema<ObjectNo
     public final static String AFTER = "after";
 
     @Override
-    public void deserialize(SourceRecord sourceRecord, Collector<ObjectNode> collector) throws Exception {
+    public void deserialize(SourceRecord sourceRecord, Collector<Event> collector) throws Exception {
         ObjectNode node = JsonUtil.getMapper().createObjectNode();
         Struct value = (Struct)sourceRecord.value();
         Struct source = (Struct) value.get("source");
@@ -43,24 +48,35 @@ public class DBDeserialization implements DebeziumDeserializationSchema<ObjectNo
         String tableName = source.getString("table");
         Long modifyTime = source.getInt64("ts_ms");
         Envelope.Operation operation = Envelope.operationFor(sourceRecord);
-        node.put("mt", modifyTime);          // modify time
-        node.put("db", database);            // database
-        node.put("sm", schemaName);          // schemaName
-        node.put("tb", tableName);           // table name
-        node.put("op", operation.code());    // operation
 
-        ObjectNode before = parseNode(value, BEFORE);
-        ObjectNode after = parseNode(value, AFTER);
-        ArrayNode diffField = parseDiff(before, after, operation.code());
-        node.set(BEFORE, before);
-        node.set(AFTER, after);
-        node.set("diffField", diffField);
-        collector.collect(node);
+        String op = operation.code();
+        Event event;
+        if (Event.DELETE_EVENT.equals(op)) {
+            ObjectNode before = parseNode(value, BEFORE);
+            event = new DeleteEvent(before);
+        }else if (Event.INSERT_EVENT.equals(op)) {
+            ObjectNode after = parseNode(value, AFTER);
+            event = new InsertEvent(after);
+        }else if (Event.UPDATE_EVENT.equals(op)) {
+            ObjectNode before = parseNode(value, BEFORE);
+            ObjectNode after = parseNode(value, AFTER);
+            Set<String> diffField = parseDiff(before, after, operation.code());
+            event = new UpdateEvent(before, after, diffField);
+        }else {
+            // 其他事件不进行处理
+            return;
+        }
+        event.setDatabase(database);
+        event.setModifyTime(modifyTime);
+        event.setSchemaName(schemaName);
+        event.setTableName(tableName);
+
+        collector.collect(event);
     }
 
     @Override
-    public TypeInformation<ObjectNode> getProducedType() {
-        return TypeInformation.of(ObjectNode.class);
+    public TypeInformation<Event> getProducedType() {
+        return TypeInformation.of(Event.class);
     }
 
     public static ObjectNode parseNode(Struct struct, String field) {
@@ -131,9 +147,9 @@ public class DBDeserialization implements DebeziumDeserializationSchema<ObjectNo
         return node;
     }
 
-    public static ArrayNode parseDiff(ObjectNode before, ObjectNode after, String operation) {
+    public static Set<String> parseDiff(ObjectNode before, ObjectNode after, String operation) {
         if (UPDATE.equals(operation)) {
-            ArrayNode diff = JsonUtil.getMapper().createArrayNode();
+            Set<String> diff = new HashSet<>();
             Iterator<Map.Entry<String, JsonNode>> nodeEntries = before.fields();
             while (nodeEntries.hasNext()) {
                 Map.Entry<String, JsonNode> next = nodeEntries.next();

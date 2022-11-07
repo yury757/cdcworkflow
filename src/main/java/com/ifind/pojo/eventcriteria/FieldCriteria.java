@@ -1,4 +1,4 @@
-package com.ifind.pojo.event;
+package com.ifind.pojo.eventcriteria;
 
 import java.util.Set;
 

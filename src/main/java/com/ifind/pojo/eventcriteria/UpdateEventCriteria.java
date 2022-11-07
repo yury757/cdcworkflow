@@ -1,4 +1,7 @@
-package com.ifind.pojo.event;
+package com.ifind.pojo.eventcriteria;
+
+import com.ifind.pojo.event.Event;
+import com.ifind.pojo.event.UpdateEvent;
 
 /**
  * 更新事件判断器
@@ -6,8 +9,8 @@ package com.ifind.pojo.event;
  */
 public class UpdateEventCriteria extends DDLEventCriteria {
     private FieldCriteria fieldCriteria;
-    public UpdateEventCriteria(FieldCriteria fieldCriteria) {
-        super(Event.UPDATE_EVENT);
+    public UpdateEventCriteria(String tableName, FieldCriteria fieldCriteria) {
+        super(tableName, Event.UPDATE_EVENT);
         this.fieldCriteria = fieldCriteria;
     }
 
@@ -20,9 +23,6 @@ public class UpdateEventCriteria extends DDLEventCriteria {
         if (!Event.UPDATE_EVENT.equals(event.getEventType())) {
             return false;
         }
-        if (!fieldCriteria.meetField(e.getChangedFields())) {
-            return false;
-        }
-        return true;
+        return fieldCriteria.meetField(e.getChangedFields());
     }
 }

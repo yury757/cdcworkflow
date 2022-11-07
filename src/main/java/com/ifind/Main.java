@@ -1,16 +1,13 @@
 package com.ifind;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ifind.pojo.event.Event;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import com.ververica.cdc.debezium.StringDebeziumDeserializationSchema;
 import com.ververica.cdc.connectors.postgres.PostgreSQLSource;
-import org.apache.flink.util.Collector;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        SourceFunction<ObjectNode> sourceFunction = PostgreSQLSource.<ObjectNode>builder()
+    public static void main2(String[] args) throws Exception {
+        SourceFunction<Event> sourceFunction = PostgreSQLSource.<Event>builder()
                 .hostname("localhost")
                 .port(5432)
                 .database("postgres")
@@ -18,7 +15,7 @@ public class Main {
                 .tableList("inventory.products")
                 .username("flinkuser")
                 .password("flinkpw")
-                .deserializer(new DBDeserialization())
+                .deserializer(DBDeserialization.INSTANCE)
                 .build();
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -28,5 +25,8 @@ public class Main {
                 .print().setParallelism(1); // use parallelism 1 for sink to keep message ordering
 
         env.execute();
+    }
+
+    public static void main(String[] args) {
     }
 }
