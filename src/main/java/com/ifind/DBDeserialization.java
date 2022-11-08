@@ -3,10 +3,7 @@ package com.ifind;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ifind.pojo.event.DeleteEvent;
-import com.ifind.pojo.event.Event;
-import com.ifind.pojo.event.InsertEvent;
-import com.ifind.pojo.event.UpdateEvent;
+import com.ifind.core.event.*;
 import com.ifind.uitls.DateUtil;
 import com.ifind.uitls.JsonUtil;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
@@ -62,6 +59,9 @@ public class DBDeserialization implements DebeziumDeserializationSchema<Event> {
             ObjectNode after = parseNode(value, AFTER);
             Set<String> diffField = parseDiff(before, after, operation.code());
             event = new UpdateEvent(before, after, diffField);
+        }else if (Event.READ_EVENT.equals(op)) {
+            ObjectNode after = parseNode(value, AFTER);
+            event = new ReadEvent(after);
         }else {
             // 其他事件不进行处理
             return;
@@ -99,16 +99,17 @@ public class DBDeserialization implements DebeziumDeserializationSchema<Event> {
                     break;
                 case INT32:
                     Integer int32 = v.getInt32(fName);
-                    if (int32 == null) {
-                        node.set(fName, NullNode.instance);
-                        break;
-                    }
-                    if (io.debezium.time.Date.SCHEMA_NAME.equals(f.schema().name())) {
-                        // 放入一个日期类型
-                        node.putPOJO(fName, new java.util.Date(int32 * DateUtil.ONE_DAY_SEC));
-                    }else {
-                        node.put(fName, int32);
-                    }
+                    node.put(fName, int32);
+//                    if (int32 == null) {
+//                        node.set(fName, NullNode.instance);
+//                        break;
+//                    }
+//                    if (io.debezium.time.Date.SCHEMA_NAME.equals(f.schema().name())) {
+//                        // 放入一个日期类型
+//                        node.putPOJO(fName, new java.util.Date(int32 * DateUtil.ONE_DAY_SEC));
+//                    }else {
+//                        node.put(fName, int32);
+//                    }
                     break;
                 case INT64:
                     node.put(fName, v.getInt64(fName));

@@ -1,4 +1,4 @@
-package com.ifind.pojo.event;
+package com.ifind.core.event;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

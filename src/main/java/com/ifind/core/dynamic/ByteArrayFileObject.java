@@ -1,4 +1,4 @@
-package com.ifind.pojo.dynamic;
+package com.ifind.core.dynamic;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;

@@ -1,4 +1,4 @@
-package com.ifind.pojo.dynamic;
+package com.ifind.core.dynamic;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

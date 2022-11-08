@@ -1,7 +1,7 @@
-package com.ifind.pojo.eventcriteria;
+package com.ifind.core.eventcriteria;
 
-import com.ifind.pojo.event.Event;
-import com.ifind.pojo.event.UpdateEvent;
+import com.ifind.core.event.Event;
+import com.ifind.core.event.UpdateEvent;
 
 /**
  * 更新事件判断器

@@ -18,6 +18,7 @@
         <flinkcdc.pg.version>2.2.1</flinkcdc.pg.version>
         <flink.version>1.13.6</flink.version>
         <netty.version>4.1.84.Final</netty.version>
+        <HikariCP.version>2.7.1</HikariCP.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,14 @@
             <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
         </dependency>
+
+        <!-- 连接池 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${HikariCP.version}</version>
+        </dependency>
+
     </dependencies>
 
 

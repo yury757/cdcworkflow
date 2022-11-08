@@ -1,4 +1,4 @@
-package com.ifind.pojo.event;
+package com.ifind.core.event;
 
 /**
  * 数据库数据变动事件
@@ -8,6 +8,7 @@ public class Event {
     public static final String UPDATE_EVENT = "u";
     public static final String INSERT_EVENT = "c";
     public static final String DELETE_EVENT = "d";
+    public static final String READ_EVENT = "r";
 
     protected String eventType;
     protected Long modifyTime;
