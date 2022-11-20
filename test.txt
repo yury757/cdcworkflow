@@ -1,0 +1,9 @@
+
+到来 4131006872 0/F63A2998
+rmgr: Sequence    len (rec/tot):     99/    99, tx:      56528, lsn: 0/F63A2998, prev 0/F63A2920, desc: LOG rel 1663/13419/16463, blkref #0: rel 1663/13419/16463 blk 0
+
+处理 4131006976 0/F63A2A00
+rmgr: Heap        len (rec/tot):     74/   163, tx:      56528, lsn: 0/F63A2A00, prev 0/F63A2998, desc: INSERT off 3 flags 0x08, blkref #0: rel 1663/13419/16479 blk 0 FPW
+
+回复 4131007320 0/F63A2B58
+rmgr: Standby     len (rec/tot):     50/    50, tx:          0, lsn: 0/F63A2B58, prev 0/F63A2B28, desc: RUNNING_XACTS nextXid 56529 latestCompletedXid 56528 oldestRunningXid 56529
